@@ -50,11 +50,41 @@
     }
   }
 
-  async function init() {
-    initGroupSelect(); // 班の選択肢を生成
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); }
+async function init() {
+  initGroupSelect();
+  await liff.init({ liffId: LIFF_ID });
+  
+  if (!liff.isLoggedIn()) {
+    liff.login();
+  } else {
+    // ログイン済みなら既存データを取得しに行く
+    await fetchExistingData();
   }
+}
+
+    /**
+    * 既存データの取得とフォームへの反映
+    */
+    async function fetchExistingData() {
+    const status = document.getElementById('status');
+    try {
+        const profile = await liff.getProfile();
+        // GETリクエストでLINE IDを送信
+        const response = await fetch(`${GAS_URL}?line_id=${profile.userId}`);
+        const data = await response.json();
+
+        if (data) {
+        // データがあればフォームにセット
+        document.getElementById('name').value = data.name || "";
+        document.getElementById('kana').value = data.kana || "";
+        document.getElementById('group').value = data.group || "";
+        document.getElementById('is_digital').value = data.is_digital || "デジタル配布";
+        status.innerText = "登録済みの情報を読み込みました。";
+        }
+    } catch (err) {
+        console.error("データ取得失敗:", err);
+    }
+    }
 
   async function sendData() {
     const status = document.getElementById('status');
