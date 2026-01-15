@@ -33,6 +33,8 @@
   <div id="form">
     <label>氏名</label><input type="text" id="name">
     <label>フリガナ</label><input type="text" id="kana">
+    <label>町内住所（番地）</label>
+    <input type="text" id="address">
     <label>班</label>
     <select id="group"></select>
     <label>受取方法</label>
@@ -115,6 +117,7 @@ async function init() {
         document.getElementById('name').value = data.name || "";
         document.getElementById('kana').value = data.kana || "";
         document.getElementById('group').value = data.group || "";
+        document.getElementById('address').value = data.address || "";
         document.getElementById('is_digital').value = data.is_digital || "デジタル配布";
         status.innerText = "登録済みの情報を読み込みました。";
         }
@@ -156,6 +159,7 @@ async function init() {
         name: name,
         kana: document.getElementById('kana').value,
         group: document.getElementById('group').value,
+        address: document.getElementById('address').value,
         is_digital: document.getElementById('is_digital').value
       };
 
