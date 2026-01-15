@@ -9,8 +9,11 @@
     .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; }
     label { display: block; margin-top: 15px; font-weight: bold; }
     input, select { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; }
-    button { width: 100%; padding: 15px; background: #00b900; color: white; border: none; border-radius: 30px; margin-top: 25px; font-weight: bold; }
+    button { width: 100%; padding: 15px; background: #00b900; color: white; border: none; border-radius: 30px; margin-top: 25px; font-weight: bold; cursor: pointer; transition: opacity 0.3s; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     #status { text-align: center; margin-top: 10px; color: #666; font-size: 0.9rem; }
+    #status.sending { color: #00b900; font-weight: bold; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   </style>
 </head>
 <body>
@@ -20,9 +23,7 @@
     <label>氏名</label><input type="text" id="name">
     <label>フリガナ</label><input type="text" id="kana">
     <label>班</label>
-    <select id="group">
-      <option value="1">1班</option><option value="2">2班</option><option value="3">3班</option>
-      </select>
+    <select id="group"></select>
     <label>受取方法</label>
     <select id="is_digital">
       <option value="デジタル配布">スマホ受取</option>
@@ -38,16 +39,31 @@
   const LIFF_ID = '2008893549-jeCNKx4Y'; // あなたのLIFF ID
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbxrWq6JQMU2PWkwW94So_osDiWHEnEsiV2LnMdL9cBVbe0ohfd1n3SEMZ1X6Q_mlY94/exec'; // あなたのGAS ウェブアプリURL
 
+  // 班の選択肢を動的に生成
+  function initGroupSelect() {
+    const groupSelect = document.getElementById('group');
+    for (let i = 1; i <= 15; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${i}班`;
+      groupSelect.appendChild(option);
+    }
+  }
+
   async function init() {
+    initGroupSelect(); // 班の選択肢を生成
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); }
   }
 
   async function sendData() {
     const status = document.getElementById('status');
+    const button = event.target;
     const name = document.getElementById('name').value;
     if(!name) return alert("名前を入力してください");
 
+    button.disabled = true;
+    status.className = 'sending';
     status.innerText = "送信中...";
     
     try {
@@ -69,12 +85,16 @@
       
       const result = await response.json();
       if (result.status === 'success') {
+        status.className = '';
+        status.innerText = "";
         alert("登録完了！");
         liff.closeWindow();
       } else {
         throw new Error(result.message);
       }
     } catch (err) {
+      button.disabled = false;
+      status.className = '';
       alert("エラーが発生しました: " + err);
       status.innerText = "エラー: " + err;
     }
