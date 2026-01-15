@@ -16,7 +16,7 @@
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     #loading-overlay { position: fixed; top: 0; left: 0; text-align: center; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
     #loading-overlay.active { display: flex; }
-    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #00b900; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #00b900; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;}
     .loading-text { color: #fff; font-size: 0.85rem; margin-top: 15px; font-weight: normal; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
@@ -50,6 +50,12 @@
   const LIFF_ID = '2008893549-jeCNKx4Y'; // あなたのLIFF ID
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbxrWq6JQMU2PWkwW94So_osDiWHEnEsiV2LnMdL9cBVbe0ohfd1n3SEMZ1X6Q_mlY94/exec'; // あなたのGAS ウェブアプリURL
 
+  // ローカル環境かどうかを判定
+  function isLocalEnvironment() {
+    const hostname = window.location.hostname;
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
+  }
+
   // 班の選択肢を動的に生成
   function initGroupSelect() {
     const groupSelect = document.getElementById('group');
@@ -63,6 +69,19 @@
 
 async function init() {
   initGroupSelect();
+  
+  // ローカル環境の場合はLIFFを初期化しない
+  if (isLocalEnvironment()) {
+    console.log('ローカル環境: LIFFは無効化されています');
+    const status = document.getElementById('status');
+    status.innerText = "ローカル環境で動作中（LIFF無効）";
+    status.style.color = '#ff9900';
+    // ローディングを非表示
+    document.getElementById('loading-overlay').classList.remove('active');
+    return;
+  }
+  
+  // 本番環境の場合のみLIFFを初期化
   await liff.init({ liffId: LIFF_ID });
   
   if (!liff.isLoggedIn()) {
@@ -119,6 +138,17 @@ async function init() {
     status.innerText = "送信中...";
     
     try {
+      // ローカル環境の場合はダミー送信
+      if (isLocalEnvironment()) {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1秒待機
+        status.className = '';
+        status.innerText = "";
+        alert("登録完了！（ローカル環境のため実際の送信は行われません）");
+        button.disabled = false;
+        return;
+      }
+      
+      // 本番環境の場合のみLIFFを使用
       const profile = await liff.getProfile();
       const data = {
         line_id: profile.userId,
