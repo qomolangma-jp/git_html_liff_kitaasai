@@ -14,19 +14,31 @@
     #status { text-align: center; margin-top: 10px; color: #666; font-size: 0.9rem; }
     #status.sending { color: #00b900; font-weight: bold; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+<<<<<<< HEAD
     #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
     #loading-overlay.active { display: flex; }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #00b900; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
     .loading-text { color: #fff; font-size: 0.85rem; margin-top: 15px; font-weight: normal; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+=======
+    #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    #loading-overlay.active { display: flex; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #00b900; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #form.disabled { pointer-events: none; opacity: 0.6; }
+>>>>>>> 7380c9b908c9b5d16938a9eb382a3cd207244060
   </style>
 </head>
 <body>
 <div id="loading-overlay">
+<<<<<<< HEAD
   <div>
     <div class="spinner"></div>
     <div style="color: white; font-size: 0.85rem; margin-top: 15px; text-align: center;">入力セッティング中</div>
   </div>
+=======
+  <div class="spinner"></div>
+>>>>>>> 7380c9b908c9b5d16938a9eb382a3cd207244060
 </div>
 <div class="container">
   <h2>町内会 配布設定</h2>
